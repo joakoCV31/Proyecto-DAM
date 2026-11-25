@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:descuidau/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import '../services/auth_service.dart';
@@ -93,15 +94,12 @@ class _PublicarPageState extends State<PublicarPage> {
       Uint8List bytes = await archivo.readAsBytes();
 
       if (bytes.lengthInBytes > _maxBytesPermitidos) {
-        final XFile? recomprimida = await _picker.pickImage(
-          source: origen,
-          maxWidth: 800,
-          maxHeight: 800,
-          imageQuality: 55,
+        bytes = await FlutterImageCompress.compressWithList(
+          bytes,
+          minWidth: 800,
+          minHeight: 800,
+          quality: 60,
         );
-        if (recomprimida != null) {
-          bytes = await recomprimida.readAsBytes();
-        }
       }
 
       if (!mounted) return;
@@ -126,7 +124,7 @@ class _PublicarPageState extends State<PublicarPage> {
       });
     }
   }
-
+  
   void _mostrarOpcionesFoto() {
     showModalBottomSheet(
       context: context,
